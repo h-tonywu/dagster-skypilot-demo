@@ -16,7 +16,7 @@ def get_metrics(context: AssetExecutionContext, bucket):
 
 
 def teardown_all_clusters(logger):
-    clusters = sky.status(refresh=True)
+    clusters = sky.status(refresh="FORCE")
 
     for c in clusters:
         logger.info(f"Shutting down cluster: {c['name']}.")
@@ -29,12 +29,8 @@ class SkyPilotConfig(Config):
     """A minimal set of configurations for SkyPilot. This is NOT intended as a
     complete or exhaustive representation of a Task YAML config."""
 
-    max_steps: int = Field(
-        default=10, description="Number of training steps to perform."
-    )
-    spot_launch: bool = Field(
-        default=False, description="Should the task be run as a managed spot job?"
-    )
+    max_steps: int = Field(default=10, description="Number of training steps to perform.")
+    spot_launch: bool = Field(default=False, description="Should the task be run as a managed spot job?")
 
 
 @asset(group_name="ai")
@@ -64,9 +60,7 @@ def skypilot_model(context: AssetExecutionContext, config: SkyPilotConfig) -> No
 
     try:
         if config.spot_launch:
-            context.log.info(
-                "Launching managed spot job. See stdout for SkyPilot logs."
-            )
+            context.log.info("Launching managed spot job. See stdout for SkyPilot logs.")
             sky.spot_launch(task, "gemma")  # type: ignore
         else:
             context.log.info("Launching task. See stdout for SkyPilot logs.")
