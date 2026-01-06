@@ -9,7 +9,7 @@ setup(
         "dagster-shell",
         "universal_pathlib",
         "s3fs",
-        "skypilot[aws,azure,gcp]",
+        "skypilot[aws]==0.9.2",
     ],
     extras_require={
         "dev": [
