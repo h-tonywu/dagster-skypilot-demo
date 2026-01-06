@@ -65,7 +65,12 @@ def skypilot_model(context: AssetExecutionContext, config: SkyPilotConfig) -> No
             sky.spot_launch(task, "gemma")  # type: ignore
         else:
             context.log.info("Launching task. See stdout for SkyPilot logs.")
-            sky.launch(task, "gemma")  # type: ignore
+            request_id = sky.launch(task, "gemma")  # type: ignore
+
+            # (Optional) stream the logs from the task to the console.
+            job_id, handle = sky.stream_and_get(request_id)
+            cluster_name = handle.get_cluster_name()
+            context.log.info(sky.tail_logs(cluster_name, job_id, follow=True))
 
         context.log.info("Task completed.")
         context.add_output_metadata(get_metrics(context, skypilot_bucket))
