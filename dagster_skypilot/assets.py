@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 
 import sky
 import yaml
@@ -69,6 +70,10 @@ def skypilot_model(context: AssetExecutionContext, config: SkyPilotConfig) -> No
         context.log.info("Task completed.")
         context.add_output_metadata(get_metrics(context, skypilot_bucket))
 
+    except Exception as e:
+        context.log.error(f"Error occurred: {e}")
+        context.log.error(traceback.format_exc())
+        raise
+
     finally:
         teardown_all_clusters(context.log)
-        ...
